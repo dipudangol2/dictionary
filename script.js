@@ -11,27 +11,38 @@ btn.addEventListener("click", () => {
     .then((data) => {
       console.log(data);
       let phonetics = "";
+      let definitionContent = ``;
       data[0].phonetics.forEach((element) => {
         if (element.hasOwnProperty("text")) {
           phonetics += element.text + " ";
         }
       });
-      result.innerHTML = ` <div class="word">
+      data[0].meanings.forEach((element) => {
+        let def = ``;
+        let num=1;
+        element.definitions.forEach((element) => {
+          def += String(num)+`.` + element.definition+`<br><br>`;
+          num++;
+        });
+        definitionContent += `<div class="details">
+        <p>${element.partOfSpeech}</p>
+        <p>${phonetics}</p>
+        </div>
+        <p class="word-meaning">
+        ${def}
+      </p>
+      <p class="word-example">
+        ${element.definitions[0].example || "No Example found"}
+      </p>`;
+      });
+      result.innerHTML =
+        ` <div class="word">
       <h3>${inpWord}</h3>
       <button onclick="playSound()">
         <span class="material-symbols-rounded"> volume_up </span>
       </button>
-    </div>
-    <div class="details">
-      <p>${data[0].meanings[0].partOfSpeech}</p>
-      <p>${phonetics}</p>
-    </div>
-    <p class="word-meaning">
-      ${data[0].meanings[0].definitions[0].definition}
-    </p>
-    <p class="word-example">
-      ${data[0].meanings[0].definitions[0].example || ""}
-    </p>`;
+    </div>` + definitionContent;
+
       let audioLink;
       for (let audio in data[0].phonetics) {
         if (audio !== "") {
